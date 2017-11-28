@@ -1,0 +1,38 @@
+{
+  "name": "saml-metadata-parser",
+  "description": "",
+  "version": "1.0.0",
+  "private": false,
+  "author": "Samuli Suortti",
+  "keywords": [
+    "saml",
+    "idp",
+    "passport"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smulis/saml-metadata-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/smulis/saml-metadata-parser/issues"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha tests"
+  },
+  "engines": {
+    "node": ">=8.9.1",
+    "npm": ">=5.5.1"
+  },
+  "devDependencies": {
+    "chai": "4.1.2",
+    "eslint-config-airbnb-base": "12.0.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint": "4.8.0",
+    "mocha": "4.0.1",
+    "nock": "9.0.27"
+  },
+  "dependencies": {
+    "xml2json": "0.11.0"
+  }
+}
