@@ -28,7 +28,7 @@ function getEntrypoint(SingleSignOnService) {
 
 module.exports = class ISPSSODescriptor {
   constructor(metadata) {
-    const base = metadata.EntityDescriptor.IDPSSODescriptor;
+    const base = metadata['md:EntityDescriptor'].IDPSSODescriptor;
 
     Object.defineProperty(
       this,
