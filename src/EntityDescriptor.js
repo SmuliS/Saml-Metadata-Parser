@@ -1,7 +1,8 @@
 module.exports = class EntityDescriptor {
   constructor(metadata) {
-    const base = metadata.EntityDescriptor;
-    Object.defineProperty(this, 'entityID', { value: base.entityID });
-    Object.defineProperty(this, 'documentID', { value: base.ID });
+    if (metadata != undefined && metadata.EntityDescriptor != undefined) {
+      this.entityID = metadata.EntityDescriptor.entityID;
+      this.documentID = metadata.EntityDescriptor.documentID;
+    }
   }
 };
