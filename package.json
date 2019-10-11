@@ -1,9 +1,10 @@
 {
   "name": "saml-metadata-parser",
   "description": "",
-  "version": "1.0.1",
+  "version": "1.0.2a",
   "private": false,
   "author": "Samuli Suortti",
+  "contributors": ["Enrico Fabris"],
   "keywords": [
     "saml",
     "idp",

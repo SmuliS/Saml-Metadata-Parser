@@ -1,15 +1,16 @@
 
 
-module.exports = class IDPSSODescriptor {
+module.exports = class SPSSODescriptor {
     constructor(metadata) {
-        const base = metadata.EntityDescriptor.IDPSSODescriptor;
+        const base = metadata.EntityDescriptor.SPSSODescriptor;
         if (base) {
             this.signingKey = this.getKey(base["KeyDescriptor"], 'signing');
             this.encryptionKey = this.getKey(base["KeyDescriptor"], 'encryption');
-            this.SingleSignOnURL = this.getEntrypoints(base["SingleSignOnService"]);
+            this.SingleSignOnURL = this.getEntrypoints(base["AssertionConsumerService"]);
             this.SingleLogoutURL = this.getEntrypoints(base["SingleLogoutService"]);
         }
     }
+
 
     getKey(keyDescriptor, type) {
         var obj = keyDescriptor.find(item => item.use === type);
