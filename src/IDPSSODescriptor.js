@@ -7,9 +7,20 @@ module.exports = class IDPSSODescriptor extends SSODescriptor {
             this.SingleSignOnService = SSODescriptor.getEntrypoints(
                 this.base.SingleSignOnService,
             );
-            this.SingleSignOnURL = this.SingleLogoutService.find(
-                item => item.index === 0,
-            ).location;
+            this.SingleSignOnURL =
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding ===
+                        IDPSSODescriptor.redirectBinding,
+                ).location ||
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding === IDPSSODescriptor.postBinding,
+                ).location ||
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding === IDPSSODescriptor.soapBinding,
+                ).location;
         }
     }
 };

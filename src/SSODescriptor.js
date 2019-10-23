@@ -18,9 +18,22 @@ class SSODescriptor {
                 this.SingleLogoutService = SSODescriptor.getEntrypoints(
                     this.base.SingleLogoutService,
                 );
-                this.SingleLogoutURL = this.SingleLogoutService.find(
-                    item => item.index === 0,
-                ).location;
+                this.SingleLogoutURL =
+                    this.SingleLogoutService.find(
+                        item =>
+                            item.binding ===
+                            SSODescriptor.redirectBinding,
+                    ).location ||
+                    this.SingleLogoutService.find(
+                        item =>
+                            item.binding ===
+                            SSODescriptor.postBinding,
+                    ).location ||
+                    this.SingleLogoutService.find(
+                        item =>
+                            item.binding ===
+                            SSODescriptor.soapBinding,
+                    ).location;
             }
         }
     }
@@ -59,12 +72,7 @@ class SSODescriptor {
             return null;
         }
 
-        const redirectBinding =
-            'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect';
-        const postBinding =
-            'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST';
-        const soapBinding =
-            'urn:oasis:names:tc:SAML:2.0:bindings:SOAP';
+        const entryPoints = [];
 
         let newEndpointObject;
 
@@ -75,54 +83,50 @@ class SSODescriptor {
         }
 
         let obj = newEndpointObject.find(
-            item => item.Binding === redirectBinding,
+            item => item.Binding === SSODescriptor.redirectBinding,
         );
-        const redirect = obj ? obj.Location : undefined;
-        let redirectIndex;
-        if (obj) {
-            redirectIndex = obj.index ? obj.index : 0;
-        }
+
+        entryPoints.push({
+            binding: SSODescriptor.redirectBinding,
+            location: obj ? obj.Location : undefined,
+            index: obj ? obj.index : undefined,
+            responseLocation: obj ? obj.ResponseLocation : undefined,
+            default: obj ? obj.default : false,
+        });
 
         obj = newEndpointObject.find(
-            item => item.Binding === postBinding,
+            item => item.Binding === SSODescriptor.postBinding,
         );
-        const post = obj ? obj.Location : undefined;
-        let postIndex;
-        if (obj) {
-            postIndex = obj.index ? obj.index : redirectIndex + 1;
-        }
+
+        entryPoints.push({
+            binding: SSODescriptor.postBinding,
+            location: obj ? obj.Location : undefined,
+            index: obj ? obj.index : undefined,
+            responseLocation: obj ? obj.ResponseLocation : undefined,
+            default: obj ? obj.default : false,
+        });
 
         obj = newEndpointObject.find(
-            item => item.Binding === soapBinding,
+            item => item.Binding === SSODescriptor.soapBinding,
         );
-        const soap = obj ? obj.Location : undefined;
-        let soapIndex;
-        if (obj) {
-            soapIndex = obj.index ? obj.index : postIndex + 1;
-        }
-
-        let i = -1;
-
-        const entryPoints = [];
 
         entryPoints.push({
-            binding: redirectBinding,
-            location: redirect,
-            index: redirectIndex || (i += 1),
-        });
-        entryPoints.push({
-            binding: postBinding,
-            location: post,
-            index: postIndex || (i += 1),
-        });
-        entryPoints.push({
-            binding: soapBinding,
-            location: soap,
-            index: soapIndex || (i += 1),
+            binding: SSODescriptor.soapBinding,
+            location: obj ? obj.Location : undefined,
+            index: obj ? obj.index : undefined,
+            responseLocation: obj ? obj.ResponseLocation : undefined,
+            default: obj ? obj.default : false,
         });
 
         return entryPoints;
     }
 }
+
+SSODescriptor.redirectBinding =
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect';
+SSODescriptor.postBinding =
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST';
+SSODescriptor.soapBinding =
+    'urn:oasis:names:tc:SAML:2.0:bindings:SOAP';
 
 module.exports = SSODescriptor;
