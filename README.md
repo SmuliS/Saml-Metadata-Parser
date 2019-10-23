@@ -48,6 +48,7 @@ Returns: SAML configuration in [passport-saml format](https://github.com/bergie/
 ### Contributors
 
 - [Samuli Suortti](https://github.com/smulis)
+- [Enrico Fabris](https://github.com/efabris)
 
 ### License
 

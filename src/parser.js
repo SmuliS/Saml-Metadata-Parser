@@ -5,12 +5,11 @@ const XMLParser = require('xml2json');
 
 const SAMLMetadata = require('./SAMLMetadata');
 
-const isValidRespone = res => (
+const isValidRespone = res =>
     res.statusCode === 200 &&
-    res.headers['content-type'] === 'application/samlmetadata+xml'
-);
+    res.headers['content-type'] === 'application/samlmetadata+xml';
 
-const fromString = (xmlString) => {
+const fromString = xmlString => {
     const XMLParseOptions = {
         object: true,
         coerce: true,
@@ -22,25 +21,28 @@ const fromString = (xmlString) => {
     return new SAMLMetadata(metadataObj);
 };
 
-const fromFile = (path) => {
+const fromFile = path => {
     const xmlStr = fs.readFileSync(path, 'utf8');
     return fromString(xmlStr);
 };
 
-const fromURL = URL => new Promise((resolve, reject) => https.get(URL, (res) => {
-    if (!isValidRespone(res)) {
-        reject();
-    }
-    let data = '';
+const fromURL = URL =>
+    new Promise((resolve, reject) =>
+        https.get(URL, res => {
+            if (!isValidRespone(res)) {
+                reject();
+            }
+            let data = '';
 
-    res.on('data', (chunk) => {
-        data += chunk;
-    });
+            res.on('data', chunk => {
+                data += chunk;
+            });
 
-    res.on('end', function () {
-        resolve(fromString(data));
-    });
-}));
+            res.on('end', () => {
+                resolve(fromString(data));
+            });
+        }),
+    );
 
 module.exports = {
     fromString,
