@@ -10,9 +10,9 @@ const inplaceRemovePrefixFromObject = function inplaceRemovePrefixFromObject(
             }
         }
     } else {
-        for (let prop in theObject) {
+        for (const prop in theObject) {
             if (prop.indexOf(':') > -1) {
-                let newProp =
+                const newProp =
                     prop.split(':')[0] == 'xmlns'
                         ? prop
                         : prop.split(':')[1];
@@ -49,5 +49,5 @@ const inplaceRemovePrefixFromObject = function inplaceRemovePrefixFromObject(
 };
 
 module.exports = {
-    inplaceRemovePrefixFromObject: inplaceRemovePrefixFromObject,
+    inplaceRemovePrefixFromObject,
 };

@@ -1,1 +1,5 @@
-module.exports = {samlMetadataParser: require('./src/parser'), samlUtils: require("./src/Utils")}
+const parser = require('./src/parser');
+
+module.exports = {
+    samlMetadataParser: parser,
+};
