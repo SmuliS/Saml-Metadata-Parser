@@ -1,63 +1,26 @@
-function getKey(keyDescriptor, type) {
-  return keyDescriptor
-    .find(item => item.use === type)
-    .KeyInfo
-    .X509Data
-    .X509Certificate;
-}
+const SSODescriptor = require('./SSODescriptor');
 
-function parseAttributes(attributes) {
-  function transformAttribute(attribute) {
-    return Object.assign(
-      {},
-      {
-        key: attribute.Name,
-        name: attribute.FriendlyName,
-      },
-    );
-  }
-  return attributes.map(transformAttribute);
-}
-
-function getEntrypoint(SingleSignOnService) {
-  const redirectBinding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect';
-  return SingleSignOnService
-    .find(item => item.Binding === redirectBinding)
-    .Location;
-}
-
-module.exports = class ISPSSODescriptor {
-  constructor(metadata) {
-    const base = metadata.EntityDescriptor.IDPSSODescriptor;
-
-    Object.defineProperty(
-      this,
-      'signingKey',
-      { value: getKey(base.KeyDescriptor, 'signing') },
-    );
-
-    Object.defineProperty(
-      this,
-      'encryptionKey',
-      { value: getKey(base.KeyDescriptor, 'encryption') },
-    );
-
-    Object.defineProperty(
-      this,
-      'attributes',
-      { value: parseAttributes(base.Attribute) },
-    );
-
-    Object.defineProperty(
-      this,
-      'SingleSignOnURL',
-      { value: getEntrypoint(base.SingleSignOnService) },
-    );
-
-    Object.defineProperty(
-      this,
-      'SingleLogoutURL',
-      { value: getEntrypoint(base.SingleLogoutService) },
-    );
-  }
+module.exports = class IDPSSODescriptor extends SSODescriptor {
+    constructor(base) {
+        super(base);
+        if (this.base) {
+            this.SingleSignOnService = SSODescriptor.getEntrypoints(
+                this.base.SingleSignOnService,
+            );
+            this.SingleSignOnURL =
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding ===
+                        IDPSSODescriptor.redirectBinding,
+                ).location ||
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding === IDPSSODescriptor.postBinding,
+                ).location ||
+                this.SingleSignOnService.find(
+                    item =>
+                        item.binding === IDPSSODescriptor.soapBinding,
+                ).location;
+        }
+    }
 };

@@ -1,29 +1,48 @@
 const EntityDescriptor = require('./EntityDescriptor');
 const IDPSSODescriptor = require('./IDPSSODescriptor');
+const SPSSODescriptor = require('./SPSSODescriptor');
+const { inplaceRemovePrefixFromObject } = require('./Utils');
 
 module.exports = class SAMLMetadata {
-  constructor(metadata) {
-    this.entity = new EntityDescriptor(metadata);
-    this.IDPConfig = new IDPSSODescriptor(metadata);
-  }
+    constructor(metadata) {
+        inplaceRemovePrefixFromObject(metadata);
+        const entDesc = metadata.EntityDescriptor;
+        if (entDesc) {
+            this.entity = new EntityDescriptor(entDesc);
+            this.IDPConfig = entDesc.IDPSSODescriptor
+                ? new IDPSSODescriptor(entDesc.IDPSSODescriptor)
+                : undefined;
 
-  addSPConfiguration(configuration) {
-    this.serviceProviderConfig = configuration;
-    return this;
-  }
-
-  get asPassportConfig() {
-    if (!this.serviceProviderConfig) {
-      throw Error('Missing service provider configuration');
+            this.SPConfig = entDesc.SPSSODescriptor
+                ? new SPSSODescriptor(entDesc.SPSSODescriptor)
+                : undefined;
+        } else {
+            throw new Error('Invalid Metadata!');
+        }
     }
-    return {
-      callbackUrl: this.serviceProviderConfig.callbackUrl || null,
-      entryPoint: this.IDPConfig.SingleSignOnURL,
-      issuer: this.serviceProviderConfig.issuer || null,
-      cert: this.IDPConfig.signingKey,
-      privateCert: this.serviceProviderConfig.privateCert || null,
-      decryptionPvk: this.IDPConfig.encryptionKey,
-      signatureAlgorithm: 'sha1',
-    };
-  }
+
+    addSPConfiguration(configuration) {
+        this.serviceProviderConfig = configuration;
+        return this;
+    }
+
+    get asPassportConfig() {
+        const ssoUrl = this.IDPConfig.SingleSignOnURL;
+
+        if (!this.serviceProviderConfig) {
+            throw Error('Missing service provider configuration');
+        }
+
+        return {
+            callbackUrl:
+                this.serviceProviderConfig.callbackUrl || null,
+            entryPoint: ssoUrl,
+            issuer: this.serviceProviderConfig.issuer || null,
+            cert: this.IDPConfig.signingKey,
+            privateCert:
+                this.serviceProviderConfig.privateCert || null,
+            decryptionPvk: this.IDPConfig.encryptionKey,
+            signatureAlgorithm: 'sha1',
+        };
+    }
 };
